@@ -88,7 +88,7 @@ public class JXBaseBanner: UIView {
         return placeholder
     }()
     
-    lazy var collectionView: UICollectionView = {
+    public lazy var collectionView: UICollectionView = {
         let collectionView: UICollectionView =
             UICollectionView(frame: self.bounds,
                              collectionViewLayout: self.layout)
