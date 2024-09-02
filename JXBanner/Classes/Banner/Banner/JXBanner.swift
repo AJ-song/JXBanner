@@ -206,7 +206,7 @@ extension JXBanner {
         currentIndexPath = tempIndexPath
     }
 
-    @objc internal override func autoScroll() {
+    @objc public override func autoScroll() {
 
         // Determine if it's on screen
         guard isShowingOnWindow() != false,
