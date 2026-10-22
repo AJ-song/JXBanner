@@ -26,6 +26,67 @@ JXBanner relies on JXPageConytrol and includes many custom interfaces, such as t
 ---
 
 ### Installation
+
+#### Swift Package Manager
+
+SPM 支持 Swift tools 5.5+、iOS 12+，使用 Swift 5 语言模式。下面的 CocoaPods 安装方式仍然保留。
+
+在 Xcode 中选择 **File → Add Package Dependencies**，输入 `https://github.com/AJ-song/JXBanner.git`，在本次改动发布为 `0.3.7` 后选择从 `0.3.7` 开始的版本规则，然后将 `JXBanner` 产品添加到应用 Target。
+
+如果其他 Swift Package 依赖本库，在它的 `Package.swift` 中添加以下配置（需要先按下面的顺序发布两个包）：
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/AJ-song/JXBanner.git", from: "0.3.7")
+],
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: [
+            .product(name: "JXBanner", package: "JXBanner")
+        ]
+    )
+]
+```
+
+源码中继续使用 `import JXBanner`。本包通过远程依赖自动引入 [AJ-song/JXPageControl](https://github.com/AJ-song/JXPageControl) 的 `0.1.6..<1.0.0` 版本，不再内置该库源码。只使用 Banner 时，无需手工再添加 JXPageControl。如果调用方直接 `import JXPageControl` 并使用它的类型，应给调用方 Target 显式添加该包的 `JXPageControl` 产品；在其他包的 Target 里使用 `.product(name: "JXPageControl", package: "JXPageControl")` 时，也要在该包外层 `dependencies` 中声明上述 JXPageControl URL。
+
+本库的公开接口涉及 JXPageControl 类型；请勿同时通过另一个包或 CocoaPods 重复引入 JXBanner/JXPageControl。SnapKit 仅供原有示例使用，不属于库的依赖；示例图片、视频和 Pods 不参与 SPM 库构建。
+
+两个仓库各自的 library 产品均未固定静态或动态链接类型，由 SPM/Xcode 按使用场景选择。
+
+##### 构建与发布版本
+
+在仓库根目录验证 iOS 模拟器构建：
+
+根目录原有的 `_Pods.xcodeproj` 软链接已移除，避免 `xcodebuild` 优先选择旧 Pods 工程。原 CocoaPods 示例及 `Example/Pods/Pods.xcodeproj` 均保留。
+
+```sh
+xcodebuild -scheme JXBanner -configuration Debug \
+  -destination 'generic/platform=iOS Simulator' \
+  -derivedDataPath /tmp/JXBanner-SPM-DerivedData \
+  CODE_SIGNING_ALLOWED=NO build
+```
+
+SPM 使用 Git Tag 识别版本，`Package.swift` 不填写本库版本号。发布顺序：
+
+1. 将 JXPageControl 的 SPM 改动提交到 `AJ-song/JXPageControl`，先创建并发布 `0.1.6` 标签。
+2. 将本库的 `Package.swift`、README、忽略规则和根目录 `_Pods.xcodeproj` 删除改动提交到 `AJ-song/JXBanner`。如果之前上传过 Vendor 目录，同时删除旧 Vendor 目录。
+3. 确认 JXPageControl `0.1.6` 已经可访问，再给本库创建并发布 `0.3.7` 标签。
+
+在 GitHub 网页可以使用 **Add file → Upload files** 上传文件，使用文件编辑器更新 README 和 `.gitignore`。全部提交后进入 **Releases → Draft a new release**，创建新标签，选择包含 SPM 改动的分支，再发布正式 Release。不要勾选预发布版本。SPM 不需要另外上传 ZIP 或 framework，GitHub 会从标签提供源码。
+
+使用命令行发布 JXBanner 标签时：
+
+```sh
+git tag 0.3.7
+git push origin 0.3.7
+```
+
+发布前确认 `origin` 指向 `https://github.com/AJ-song/JXBanner.git`，并确认 `0.3.7` 尚未使用。现有 `0.3.6` 发布内容保持不变；如果需要同步发布 CocoaPods，再单独调整 podspec 的版本。远程标签尚未发布时，JXBanner 的远程依赖解析无法完成；本地联编验证可以使用临时镜像，不应把镜像配置、绝对路径或本地解析锁文件提交到仓库。
+
+#### CocoaPods
+
 To install, simply add the following code to your Podfile   : 
 
 ```ruby
